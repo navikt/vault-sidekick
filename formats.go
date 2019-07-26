@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"text/template"
 
@@ -167,6 +168,18 @@ func generateAwsCredentialFile(data map[string]interface{}) []byte {
 	}
 
 	return []byte(fmt.Sprintf("%s\n%s\n%s\n", profileName, accessKey, secretKey))
+}
+
+func writeFlattenFiles(filename string, data map[string]interface{}, mode os.FileMode) error {
+	for k, v := range data {
+		name := filepath.Join(filepath.Dir(filename), k)
+		if err := writeFile(name, []byte(fmt.Sprintf("%v", v)), mode); err != nil {
+			glog.Errorf("failed to write resource: %s, elemment: %s, filename: %s, error: %s",
+				filename, v, name, err)
+			return err
+		}
+	}
+	return nil
 }
 
 func writeTxtFile(filename string, data map[string]interface{}, mode os.FileMode) error {

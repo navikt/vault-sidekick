@@ -193,6 +193,8 @@ func processResource(rn *VaultResource, data map[string]interface{}) (err error)
 		err = writeCertificateFile(filename, data, rn.fileMode)
 	case "txt":
 		err = writeTxtFile(filename, data, rn.fileMode)
+	case "flatten":
+		err = writeFlattenFiles(filename, data, rn.fileMode)
 	case "bundle":
 		err = writeCertificateBundleFile(filename, data, rn.fileMode)
 	case "credential":
