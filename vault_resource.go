@@ -19,11 +19,14 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"time"
 )
 
 const (
+	// optionDirname option to set the dirname of the resource
+	optionDirname = "dir"
 	// optionFilename option to set the filename of the resource
 	optionFilename = "file"
 	// optionFormat set the output format (yaml, xml, json)
@@ -57,7 +60,7 @@ const (
 )
 
 var (
-	resourceFormatRegex = regexp.MustCompile("^(yaml|yml|json|env|ini|txt|cert|bundle|csv|template|credential|aws)$")
+	resourceFormatRegex = regexp.MustCompile("^(yaml|yml|json|env|ini|flatten|txt|cert|bundle|csv|template|credential|aws)$")
 
 	// a map of valid resource to retrieve from vault
 	validResources = map[string]bool{
@@ -108,6 +111,8 @@ type VaultResource struct {
 	create bool
 	// the size of a secret to create
 	size int64
+	// the directory to save the secret
+	dirname string
 	// the filename to save the secret
 	filename string
 	// the template file
@@ -130,13 +135,18 @@ type VaultResource struct {
 }
 
 // GetFilename generates a resource filename by default the resource name and resource type, which
-// can override by the OPTION_FILENAME option
+// can override by the OPTION_FILENAME option or OPTION_DIRNAME
 func (r VaultResource) GetFilename() string {
+	defaultFilename := filepath.Base(fmt.Sprintf("%s.%s", r.path, r.resource))
 	if r.filename != "" {
-		return r.filename
+		return filepath.Clean(r.filename)
 	}
 
-	return fmt.Sprintf("%s.%s", r.path, r.resource)
+	if r.dirname != "" {
+		return filepath.Join(r.dirname, defaultFilename)
+	}
+
+	return defaultFilename
 }
 
 // IsValid checks to see if the resource is valid

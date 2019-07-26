@@ -172,8 +172,8 @@ func fileExists(filename string) (bool, error) {
 func processResource(rn *VaultResource, data map[string]interface{}) (err error) {
 	// step: determine the resource path
 	filename := rn.GetFilename()
-	if !strings.HasPrefix(filename, "/") {
-		filename = fmt.Sprintf("%s/%s", options.outputDir, filepath.Base(filename))
+	if !filepath.IsAbs(filename) {
+		filename = filepath.Join(options.outputDir, filename)
 	}
 	// step: format and write the file
 	switch rn.format {
@@ -193,6 +193,8 @@ func processResource(rn *VaultResource, data map[string]interface{}) (err error)
 		err = writeCertificateFile(filename, data, rn.fileMode)
 	case "txt":
 		err = writeTxtFile(filename, data, rn.fileMode)
+	case "flatten":
+		err = writeFlattenFiles(filename, data, rn.fileMode)
 	case "bundle":
 		err = writeCertificateBundleFile(filename, data, rn.fileMode)
 	case "credential":
