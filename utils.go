@@ -172,8 +172,8 @@ func fileExists(filename string) (bool, error) {
 func processResource(rn *VaultResource, data map[string]interface{}) (err error) {
 	// step: determine the resource path
 	filename := rn.GetFilename()
-	if !strings.HasPrefix(filename, "/") {
-		filename = fmt.Sprintf("%s/%s", options.outputDir, filepath.Base(filename))
+	if !filepath.IsAbs(filename) {
+		filename = filepath.Join(options.outputDir, filename)
 	}
 	// step: format and write the file
 	switch rn.format {

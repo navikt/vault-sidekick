@@ -128,6 +128,8 @@ func (r *VaultResources) Set(value string) error {
 				rn.size = size
 			case optionExec:
 				rn.execPath = value
+			case optionDirname:
+				rn.dirname = value
 			case optionFilename:
 				rn.filename = value
 			case optionTemplatePath:
