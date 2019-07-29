@@ -23,7 +23,7 @@ static:
 	mkdir -p bin
 	CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags '-w ${LFLAGS}' -o bin/${NAME}
 
-docker-build:
+build-with-docker:
 	@echo "--> Compiling the project"
 	${SUDO} docker run --rm \
 		-v ${PWD}:/src \
@@ -32,16 +32,22 @@ docker-build:
 		golang:${GOVERSION} \
 		make static
 
-docker: static
+docker:
 	@echo "--> Building the docker image"
 	docker build -t ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION} .
 
-docker-release:
+docker-save: docker
+	docker save ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION} > ${DOCKER_TAR_FILE}
+docker-load: 
+	docker load -i ${DOCKER_TAR_FILE}
+
+docker-build-push:
 	@echo "--> Building a release image"
 	@make docker
+	@echo "--> Pushing imagee"
 	@docker push ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION}
 
-push: docker
+docker-push: 
 	@echo "--> Pushing the image to docker.io"
 	docker push ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION}
 
