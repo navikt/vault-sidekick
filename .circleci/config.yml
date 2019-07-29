@@ -31,13 +31,14 @@ jobs:
           command: make docker-load DOCKER_TAR_FILE=/tmp/workspace/docker-image.tar
       - run:
           name: Push Docker container
-          command: docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PWD" && make docker-push
+          command: docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PASSWORD" && make docker-push
 workflows:
   version: 2.1
   build_and_deploy:
     jobs:
       - build
       - release:
+          context: NAIS deployment
           requires:
             - build
           filters:
