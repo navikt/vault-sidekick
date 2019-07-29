@@ -6,7 +6,6 @@ executors:
 jobs:
   build:
     executor: golang-builder
-    context: NAIS deployment
     steps:
       - checkout
       - setup_remote_docker
