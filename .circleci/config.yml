@@ -30,11 +30,8 @@ jobs:
           name: Load Docker container
           command: make docker-load DOCKER_TAR_FILE=/tmp/workspace/docker-image.tar
       - run:
-          name: Login to Dockerhub
-          command: docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PWD"
-      - run:
           name: Push Docker container
-          command: make docker-push
+          command: docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PWD" && make docker-push
 workflows:
   version: 2.1
   build_and_deploy:
