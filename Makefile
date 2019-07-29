@@ -1,7 +1,6 @@
 
 NAME=vault-sidekick
 AUTHOR ?= navikt
-REGISTRY ?= docker.io
 GOVERSION ?= 1.12.0
 HARDWARE=$(shell uname -m)
 GIT_SHA=$(shell git --no-pager describe --always --dirty)
@@ -34,10 +33,10 @@ build-with-docker:
 
 docker:
 	@echo "--> Building the docker image"
-	docker build -t ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION} .
+	docker build -t ${AUTHOR}/${NAME}:${VERSION} .
 
 docker-save: docker
-	docker save ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION} > ${DOCKER_TAR_FILE}
+	docker save ${AUTHOR}/${NAME}:${VERSION} > ${DOCKER_TAR_FILE}
 
 docker-load: 
 	docker load -i ${DOCKER_TAR_FILE}
@@ -46,11 +45,11 @@ docker-build-push:
 	@echo "--> Building a release image"
 	@make docker
 	@echo "--> Pushing imagee"
-	@docker push ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION}
+	@docker push ${AUTHOR}/${NAME}:${VERSION}
 
 docker-push: 
 	@echo "--> Pushing the image to docker.io"
-	docker push ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION}
+	docker push ${AUTHOR}/${NAME}:${VERSION}
 
 release: static
 	mkdir -p release
