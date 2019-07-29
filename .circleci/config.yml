@@ -1,8 +1,4 @@
 version: 2.1    
-
-orbs:
-  nais: 'navikt/nais-deployment:XYZ'
-
 executors:
   golang-builder:
     docker: 
@@ -36,7 +32,7 @@ jobs:
           command: make docker-load DOCKER_TAR_FILE=/tmp/workspace/docker-image.tar
       - run:
           name: Login to Dockerhub
-          command: docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+          command: docker login -u "$DOCKER_LOGINR" -p "$DOCKER_PWD"
       - run:
           name: Push Docker container
           command: make docker-push
