@@ -45,11 +45,11 @@ docker-build-push:
 	@echo "--> Building a release image"
 	@make docker
 	@echo "--> Pushing imagee"
-	@docker push ${AUTHOR}/${NAME}:${VERSION}
+	@docker image push ${AUTHOR}/${NAME}:${VERSION}
 
 docker-push: 
 	@echo "--> Pushing the image to docker.io"
-	docker push ${AUTHOR}/${NAME}:${VERSION}
+	docker image push ${AUTHOR}/${NAME}:${VERSION}
 
 release: static
 	mkdir -p release
