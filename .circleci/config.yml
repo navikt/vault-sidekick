@@ -1,5 +1,8 @@
 version: 2.1    
 
+orbs:
+  nais: 'navikt/nais-deployment:XYZ'
+
 executors:
   golang-builder:
     docker: 
@@ -7,6 +10,7 @@ executors:
 jobs:
   build:
     executor: golang-builder
+    context: NAIS deployment
     steps:
       - checkout
       - setup_remote_docker
@@ -24,7 +28,7 @@ jobs:
     executor: golang-builder
     steps:
       - checkout
-      - setup_remote_docke
+      - setup_remote_docker
       - attach_workspace:
           at: /tmp/workspace
       - run:
