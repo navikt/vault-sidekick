@@ -24,12 +24,12 @@ jobs:
     executor: golang-builder
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docke
       - attach_workspace:
           at: /tmp/workspace
       - run:
           name: Load Docker container
-          command: make docker-load /tmp/workspace/docker-image.tar
+          command: make docker-load DOCKER_TAR_FILE=/tmp/workspace/docker-image.tar
       - run:
           name: Login to Dockerhub
           command: docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
