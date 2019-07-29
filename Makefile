@@ -1,11 +1,11 @@
 
 NAME=vault-sidekick
-AUTHOR ?= ukhomeofficedigital
-REGISTRY ?= quay.io
-GOVERSION ?= 1.8.1
+AUTHOR ?= navikt
+REGISTRY ?= docker.io
+GOVERSION ?= 1.12.0
 HARDWARE=$(shell uname -m)
-VERSION ?= $(shell awk '/release =/ { print $$3 }' main.go | sed 's/"//g')
 GIT_SHA=$(shell git --no-pager describe --always --dirty)
+VERSION ?= $(shell awk '/release =/ { print $$3 }' main.go | sed 's/"//g')-${GIT_SHA}
 LFLAGS ?= -X main.gitsha=${GIT_SHA}
 VETARGS?=-asmdecl -atomic -bool -buildtags -copylocks -methods -nilfunc -printf -rangeloops -shift -structtags -unsafeptr
 
@@ -13,21 +13,21 @@ VETARGS?=-asmdecl -atomic -bool -buildtags -copylocks -methods -nilfunc -printf 
 
 default: build
 
-build: deps
+build: 
 	@echo "--> Compiling the project"
 	mkdir -p bin
-	godep go build -ldflags '-w ${LFLAGS}' -o bin/${NAME}
+	go build -ldflags '-w ${LFLAGS}' -o bin/${NAME}
 
-static: deps
+static: 
 	@echo "--> Compiling the static binary"
 	mkdir -p bin
-	CGO_ENABLED=0 GOOS=linux godep go build -a -tags netgo -ldflags '-w ${LFLAGS}' -o bin/${NAME}
+	CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags '-w ${LFLAGS}' -o bin/${NAME}
 
 docker-build:
 	@echo "--> Compiling the project"
 	${SUDO} docker run --rm \
-		-v ${PWD}:/go/src/github.com/UKHomeOffice/${NAME} \
-		-w /go/src/github.com/UKHomeOffice/${NAME} \
+		-v ${PWD}:/src \
+		-w /src \
 		-e GOOS=linux \
 		golang:${GOVERSION} \
 		make static
@@ -38,7 +38,6 @@ docker: static
 
 docker-release:
 	@echo "--> Building a release image"
-	@make static
 	@make docker
 	@docker push ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION}
 
@@ -58,11 +57,6 @@ clean:
 authors:
 	@echo "--> Updating the AUTHORS"
 	git log --format='%aN <%aE>' | sort -u > AUTHORS
-
-deps:
-	@echo "--> Installing build dependencies"
-	@go get github.com/tools/godep
-
 vet:
 	@echo "--> Running go tool vet $(VETARGS) ."
 	@go tool vet 2>/dev/null ; if [ $$? -eq 3 ]; then \
@@ -84,9 +78,9 @@ gofmt:
       fi
 cover:
 	@echo "--> Running go cover"
-	@godep go test --cover
+	@go test --cover
 
-test: deps
+test: 
 	@echo "--> Running the tests"
 	go test -v
 	@$(MAKE) gofmt
