@@ -50,7 +50,7 @@ func (r authKubernetesPlugin) Create(cfg *vaultAuthOptions) (string, error) {
 	}
 
 	// in case you mounted your kubernetes auth engine somewhere else
-	loginPath := getEnv("VAULT_K8S_LOGIN_PATH", "/v1/auth/kubernetes/login")
+	loginPath := getEnv("VAULT_K8S_LOGIN_PATH", "kubernetes/login")
 
 	tokenPath := getEnv("VAULT_K8S_TOKEN_PATH", "/var/run/secrets/kubernetes.io/serviceaccount/token")
 
@@ -60,25 +60,15 @@ func (r authKubernetesPlugin) Create(cfg *vaultAuthOptions) (string, error) {
 		return "", err
 	}
 
-	// build the token request
-	request := r.client.NewRequest("POST", loginPath)
-	login := kubernetesLogin{Role: vaultRole, Jwt: string(token)}
-	if err := request.SetJSONBody(login); err != nil {
-		return "", err
-	}
+	//login
+	resp, err := r.client.Logical().Write(loginPath, map[string]interface{}{
+		"role": vaultRole,
+		"jwt":  string(token),
+	}, )
 
-	// send the request to Vault
-	resp, err := r.client.RawRequest(request)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	// parse the auth object into something useful
-	secret, err := api.ParseSecret(resp.Body)
 	if err != nil {
 		return "", err
 	}
 
-	return secret.Auth.ClientToken, nil
+	return resp.Auth.ClientToken, nil
 }
