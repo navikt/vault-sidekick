@@ -174,8 +174,8 @@ func writeFlattenFiles(filename string, data map[string]interface{}, mode os.Fil
 	for k, v := range data {
 		name := filepath.Join(filepath.Dir(filename), k)
 		if err := writeFile(name, []byte(fmt.Sprintf("%v", v)), mode); err != nil {
-			glog.Errorf("failed to write resource: %s, elemment: %s, filename: %s, error: %s",
-				filename, v, name, err)
+			glog.Errorf("failed to write resource: %s, filename: %s, error: %s",
+				filename, name, err)
 			return err
 		}
 	}
