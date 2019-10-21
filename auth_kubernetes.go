@@ -64,7 +64,7 @@ func (r authKubernetesPlugin) Create(cfg *vaultAuthOptions) (string, error) {
 	resp, err := r.client.Logical().Write(loginPath, map[string]interface{}{
 		"role": vaultRole,
 		"jwt":  string(token),
-	}, )
+	})
 
 	if err != nil {
 		return "", err
