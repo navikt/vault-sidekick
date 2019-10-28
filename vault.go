@@ -511,7 +511,7 @@ func newVaultClient(opts *config) (*api.Client, error) {
 	client.SetToken(token)
 
 	if len(opts.vaultTokenOutputFile) > 0 {
-		err := ioutil.WriteFile(opts.vaultTokenOutputFile, []byte(token), 0644)
+		err := writeFile(opts.vaultTokenOutputFile, []byte(token), 0644)
 		if err != nil {
 			return nil, fmt.Errorf("failed to write token: %s", err)
 		}

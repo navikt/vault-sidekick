@@ -21,7 +21,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -224,34 +223,4 @@ func writeTemplateFile(filename string, data map[string]interface{}, mode os.Fil
 	content := []byte(fmt.Sprintf("%s", templateOutput.String()))
 
 	return writeFile(filename, content, mode)
-}
-
-// create any necessary parent directories for the file
-// (thanks to https://stackoverflow.com/a/54001062/12029637)
-func ensureDir(fileName string) error {
-	dirName := filepath.Dir(fileName)
-	if _, serr := os.Stat(dirName); serr != nil {
-		merr := os.MkdirAll(dirName, os.ModePerm)
-		if merr != nil {
-			return merr
-		}
-	}
-	return nil
-}
-
-// writeFile writes the file to stdout or an actual file
-func writeFile(filename string, content []byte, mode os.FileMode) error {
-	if options.dryRun {
-		glog.Infof("dry-run: filename: %s, content:", filename)
-		fmt.Printf("%s\n", string(content))
-		return nil
-	}
-	glog.V(3).Infof("saving the file: %s", filename)
-
-	err := ensureDir(filename)
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(filename, content, mode)
 }
