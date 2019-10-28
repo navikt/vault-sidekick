@@ -21,7 +21,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -224,16 +223,4 @@ func writeTemplateFile(filename string, data map[string]interface{}, mode os.Fil
 	content := []byte(fmt.Sprintf("%s", templateOutput.String()))
 
 	return writeFile(filename, content, mode)
-}
-
-// writeFile writes the file to stdout or an actual file
-func writeFile(filename string, content []byte, mode os.FileMode) error {
-	if options.dryRun {
-		glog.Infof("dry-run: filename: %s, content:", filename)
-		fmt.Printf("%s\n", string(content))
-		return nil
-	}
-	glog.V(3).Infof("saving the file: %s", filename)
-
-	return ioutil.WriteFile(filename, content, mode)
 }
