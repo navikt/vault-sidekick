@@ -108,7 +108,7 @@ func main() {
 				}
 				if len(toProcess) == 0 {
 					glog.Infof("no resources left to process. exiting...")
-					if failedResource {
+					if failedResource && !options.oneShot {
 						os.Exit(1)
 					} else {
 						os.Exit(0)
