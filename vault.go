@@ -23,9 +23,8 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
-	"time"
-
 	"strings"
+	"time"
 
 	"github.com/golang/glog"
 	"github.com/hashicorp/vault/api"
@@ -71,6 +70,7 @@ const (
 )
 
 // NewVaultService creates a new implementation to speak to vault and retrieve the resources
+//
 //	url			: the url of the vault service
 func NewVaultService(url string) (*VaultService, error) {
 	var err error
@@ -273,6 +273,7 @@ func (r *VaultService) vaultServiceProcessor() {
 }
 
 // scheduleNow ... a helper method to perform an immediate reschedule into a channel
+//
 //	rn			: a pointer to the watched resource you wish to reschedule
 //	ch			: the channel the resource should be placed into
 func (r VaultService) scheduleNow(rn *watchedResource, ch chan *watchedResource) {
@@ -280,6 +281,7 @@ func (r VaultService) scheduleNow(rn *watchedResource, ch chan *watchedResource)
 }
 
 // scheduleIn ... schedules an event back into a channel after n seconds
+//
 //	rn			: a referrence some reason you wish to pass
 //	ch			: the channel the resource should be placed into
 //	min			: the minimum amount of time i'm willing to wait
@@ -296,6 +298,7 @@ func (r VaultService) scheduleIn(rn *watchedResource, ch chan *watchedResource, 
 }
 
 // upstream ... the resource has changed thus we notify the upstream listener
+//
 //	item		: the item which has changed
 func (r VaultService) upstream(item VaultEvent) {
 	// step: chunk this into a go-routine not to block us
@@ -307,7 +310,8 @@ func (r VaultService) upstream(item VaultEvent) {
 }
 
 // renew attempts to renew the lease on a resource
-// 	rn			: the resource we wish to renew the lease on
+//
+//	rn			: the resource we wish to renew the lease on
 func (r VaultService) renew(rn *watchedResource) error {
 	glog.V(4).Infof("attempting to renew the lease: %s on resource: %s", rn.secret.LeaseID, rn.resource)
 	// step: check the resource is renewable
@@ -331,6 +335,7 @@ func (r VaultService) renew(rn *watchedResource) error {
 }
 
 // revoke attempts to revoke the lease of a resource
+//
 //	lease		: the lease lease which was given when you got it
 func (r VaultService) revoke(lease string) error {
 	glog.V(3).Infof("attemping to revoking the lease: %s", lease)
@@ -345,6 +350,7 @@ func (r VaultService) revoke(lease string) error {
 }
 
 // get retrieves a secret from the vault
+//
 //	rn			: the watched resource
 func (r VaultService) get(rn *watchedResource) error {
 	var err error
@@ -565,10 +571,10 @@ func buildHTTPTransport(opts *config) (*http.Transport, error) {
 	// step: create the vault sidekick
 	transport := &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
-		Dial: (&net.Dialer{
+		DialContext: (&net.Dialer{
 			Timeout:   10 * time.Second,
 			KeepAlive: 10 * time.Second,
-		}).Dial,
+		}).DialContext,
 		TLSHandshakeTimeout: 10 * time.Second,
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: opts.skipTLSVerify,

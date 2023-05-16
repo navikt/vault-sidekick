@@ -1,12 +1,11 @@
 
 NAME=vault-sidekick
 AUTHOR ?= navikt
-GOVERSION ?= 1.12.0
+GOVERSION ?= 1.20.4
 HARDWARE=$(shell uname -m)
 GIT_SHA=$(shell git --no-pager describe --always --dirty)
 VERSION ?= $(shell awk '/release =/ { print $$3 }' main.go | sed 's/"//g')-${GIT_SHA}
-LFLAGS ?= -X main.gitsha=${GIT_SHA}
-VETARGS?=-asmdecl -atomic -bool -buildtags -copylocks -methods -nilfunc -printf -rangeloops -shift -structtags -unsafeptr
+VETARGS?=-asmdecl -atomic -bool -buildtags -copylocks -methods -nilfunc -printf -rangeloops -shift -structtag -unsafeptr
 
 .PHONY: test authors changelog build docker static release
 
@@ -20,7 +19,7 @@ build:
 static: 
 	@echo "--> Compiling the static binary"
 	mkdir -p bin
-	CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags '-w ${LFLAGS}' -o bin/${NAME}
+	CGO_ENABLED=0 GOOS=linux go build -a -buildvcs=false -o bin/${NAME}
 
 build-with-docker:
 	@echo "--> Compiling the project"
@@ -65,10 +64,7 @@ authors:
 	git log --format='%aN <%aE>' | sort -u > AUTHORS
 vet:
 	@echo "--> Running go tool vet $(VETARGS) ."
-	@go tool vet 2>/dev/null ; if [ $$? -eq 3 ]; then \
-		go get golang.org/x/tools/cmd/vet; \
-	fi
-	@go tool vet $(VETARGS) .
+	@go vet $(VETARGS) .
 
 format:
 	@echo "--> Running go fmt"

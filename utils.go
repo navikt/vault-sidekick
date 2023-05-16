@@ -23,12 +23,11 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"os"
+	"os/exec"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
-
-	"os/exec"
-	"path/filepath"
 
 	"github.com/golang/glog"
 	"gopkg.in/yaml.v2"
@@ -39,6 +38,7 @@ func init() {
 }
 
 // showUsage prints the command usage and exits
+//
 //	message		: an error message to display if exiting with an error
 func showUsage(message string, args ...interface{}) {
 	flag.PrintDefaults()
@@ -51,6 +51,7 @@ func showUsage(message string, args ...interface{}) {
 }
 
 // hasKey checks to see if a key is present
+//
 //	key			: the key we are looking for
 //	data		: a map of strings to something we are looking at
 func hasKey(key string, data map[string]interface{}) bool {
@@ -59,7 +60,8 @@ func hasKey(key string, data map[string]interface{}) bool {
 }
 
 // getKeys retrieves a list of keys from the map
-// 	data		: the map which you wish to extract the keys from
+//
+//	data		: the map which you wish to extract the keys from
 func getKeys(data map[string]interface{}) []string {
 	var list []string
 	for key := range data {
@@ -69,6 +71,7 @@ func getKeys(data map[string]interface{}) []string {
 }
 
 // readConfigFile read in a configuration file
+//
 //	filename		: the path to the file
 func readConfigFile(filename, fileFormat string) (*vaultAuthOptions, error) {
 	// step: check the file exists
@@ -90,6 +93,7 @@ func readConfigFile(filename, fileFormat string) (*vaultAuthOptions, error) {
 }
 
 // readJsonFile read in and unmarshall the data into a map
+//
 //	filename	: the path to the file container the json data
 func readJSONFile(filename, format string) (*vaultAuthOptions, error) {
 	opts := &vaultAuthOptions{}
@@ -115,6 +119,7 @@ func readJSONFile(filename, format string) (*vaultAuthOptions, error) {
 }
 
 // readYAMLFile read in and unmarshall the data into a map
+//
 //	filename	: the path to the file container the yaml data
 func readYAMLFile(filename string) (*vaultAuthOptions, error) {
 	o := &vaultAuthOptions{}
@@ -131,6 +136,7 @@ func readYAMLFile(filename string) (*vaultAuthOptions, error) {
 }
 
 // getDurationWithin generate a random integer between min and max
+//
 //	min			: the smallest number we can accept
 //	max			: the largest number we can accept
 func getDurationWithin(min, max int) time.Duration {
@@ -143,6 +149,7 @@ func getDurationWithin(min, max int) time.Duration {
 }
 
 // getEnv checks to see if an environment variable exists otherwise uses the default
+//
 //	env			: the name of the environment variable you are checking for
 //	value		: the default value to return if the value is not there
 func getEnv(env, value string) string {
@@ -154,6 +161,7 @@ func getEnv(env, value string) string {
 }
 
 // fileExists checks to see if a file exists
+//
 //	filename		: the full path to the file you are checking for
 func fileExists(filename string) (bool, error) {
 	if _, err := os.Stat(filename); err != nil {
@@ -167,7 +175,8 @@ func fileExists(filename string) (bool, error) {
 }
 
 // processResource is responsible for generating the specific content from the resource
-// 	rn		: a point to the vault resource
+//
+//	rn		: a point to the vault resource
 //	data		: a map of the related secret associated to the resource
 func processResource(rn *VaultResource, data map[string]interface{}) (err error) {
 	// step: determine the resource path
