@@ -1,22 +1,14 @@
-FROM golang:1.20-alpine as builder
-RUN apk add --no-cache git
+FROM golang:1.21 as builder
 ENV GOOS=linux
+ENV GOARCH=amd64
 ENV CGO_ENABLED=0
-ENV GO111MODULE=on
 COPY . /src
 WORKDIR /src
 RUN go get
 RUN go test ./...
 RUN go build -a -installsuffix cgo -o vault-sidekick
 
-FROM alpine:3.18
-RUN apk update && \
-    apk add ca-certificates bash
-RUN adduser -D vault
-
+FROM gcr.io/distroless/static-debian11:nonroot
 COPY --from=builder /src/vault-sidekick /vault-sidekick
-RUN chmod 755 /vault-sidekick
-
-USER vault
 
 ENTRYPOINT [ "/vault-sidekick" ]
