@@ -394,9 +394,9 @@ func (r VaultService) get(rn *watchedResource) error {
 			secret.LeaseDuration = int((time.Duration(24) * time.Hour).Seconds())
 		}
 	case "pki":
-		secret, err = r.client.Logical().Write(fmt.Sprintf(rn.resource.path), params)
+		secret, err = r.client.Logical().Write(rn.resource.path, params)
 	case "transit":
-		secret, err = r.client.Logical().Write(fmt.Sprintf(rn.resource.path), params)
+		secret, err = r.client.Logical().Write(rn.resource.path, params)
 	case "aws":
 		fallthrough
 	case "cubbyhole":
@@ -415,7 +415,7 @@ func (r VaultService) get(rn *watchedResource) error {
 		if rn.resource.create && secret == nil && err == nil {
 			glog.V(3).Infof("Create param specified, creating resource: %s", rn.resource.path)
 			params["value"] = newPassword(int(rn.resource.size))
-			secret, err = r.client.Logical().Write(fmt.Sprintf(rn.resource.path), params)
+			secret, err = r.client.Logical().Write(rn.resource.path, params)
 			glog.V(3).Infof("Secret created: %s", rn.resource.path)
 			if err == nil {
 				// Populate the secret data as stored in Vault...
@@ -442,7 +442,7 @@ func (r VaultService) get(rn *watchedResource) error {
 			"cert_type":  params["cert_type"].(string),
 		}
 
-		secret, err = r.client.Logical().Write(fmt.Sprintf(rn.resource.path), sshParams)
+		secret, err = r.client.Logical().Write(rn.resource.path, sshParams)
 	}
 	// step: check the error if any
 	if err != nil {
